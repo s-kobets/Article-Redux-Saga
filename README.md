@@ -67,8 +67,10 @@ export function fetchAddCity(name) {
 #### Для этого нам нужно:
 
 1. Создать `saga`, которая будет реагировать на `action` и вызывать нужные `dispatch()`
-2. Создать `saga middlevawe` для хранилища
-3. Подписать `saga` на `action`
+2. Подписать `saga` на `action`
+3. Создать `saga middlevawe` для хранилища
+
+С первым пунктом справляемся так:
 
 ```javascript
 export function* fetchCity(action) {
@@ -85,6 +87,31 @@ export function* fetchCity(action) {
   }
 }
 ```
+
+Подписка `saga` на `action` выглядит так:
+
+```javascript
+export function* mySagaCity() {
+  yield [
+    takeLatest('FETCH_CITY', fetchCity),
+  ]
+}
+```
+
+Третий пункт выглядит следующим образом:
+
+```javascript
+import { applyMiddleware } from 'redux';
+import createSagaMiddleware from 'redux-saga'
+
+// создаем saga мидлвар
+const sagaMiddleware = createSagaMiddleware();
+applyMiddleware(sagaMiddleware);
+
+// запускаем сагу
+sagaMiddleware.run(mySagaCity)
+```
+
 `Saga` есть ничто иное как функция-генератор в `javascript`, создается при помощи `function *`. Для того чтобы управлять вызовыми функций в генераторе есть `yield`, который остановливает и возобновляет функцию-генератор. Вызов отправки асинхроннго кода с нужными параметрами осуществляется с помощью `yield call()`. Когда данные будут получены, то функция-генератор возобновит свою работу и вызовет `dispatch()`, который в `saga` выглядит так `yield put()`.
 
 `Action addCity` имеет следующий вид:
@@ -98,11 +125,17 @@ export function addCity(city) {
 }
 ```
 
-В результате мы вызываем `dispatch()`, который позволяет нам добавить новый город в хранилище.
-
-Редьюсер имеет следующий вид:
+В результате мы вызываем `dispatch()`, который позволяет нам добавить новый город в хранилище. Редьюсер тем временем очень прост и имеет следующий вид:
 
 ```javascript
+function cities(state = [], action) {
+  switch (action.type) {
+    case 'ADD_CITY':
+      return [...state, action.amount]
+    default:
+      return state;
+  }
+}
 ```
  
 #### P.S.
