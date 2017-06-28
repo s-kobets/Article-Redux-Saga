@@ -70,7 +70,7 @@ export function fetchAddCity(name) {
 2. Подписать `saga` на `action`
 3. Создать `saga middlevawe` для хранилища
 
-С первым пунктом справляемся так:
+С первым пунктом справимся так:
 
 ```javascript
 export function* fetchCity(action) {
